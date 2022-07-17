@@ -1,10 +1,10 @@
 import json
 
 
-def load_candidates() -> list[dict]:
+def load_candidates_from_json() -> list[dict]:
     """
     Получение данных из JSON-файла
-    :return: список словарей с данными, полученными из JSON-файла
+    :return: список кандидатов с данными, полученными из JSON-файла
     """
     # Записываем в переменную название JSON-файла
     file_json = "candidates.json"
@@ -15,91 +15,56 @@ def load_candidates() -> list[dict]:
     return data_candidates
 
 
-def get_all() -> str:
-    """
-    Выводит необходимые данные всех кандидатов
-    :return: список кандидатов с необходимыми данными
-    """
-    # Получаем и записываем в переменную весь список словарей с данными кандидатов
-    data_candidates = load_candidates()
-    # Начинаем записывать в переменную все, что будет возвращать эта функция
-    display = '<pre>\t\tВсе кандидаты:\n'
-
-    # Запускаем цикл по списку словарей с данными кандидатов - в каждой итерации добавляем
-    # в переменную необходимые данные каждого кандидата
-    for candidate in data_candidates:
-        display += f""" 
-                   Имя - {candidate['name']}
-                   Позиция - {candidate['position']}
-                   Навыки - {candidate['skills']}
-                   """
-    display += '</pre>'
-    return display
-
-
-def get_by_pk(pk: int) -> str:
+def get_candidate_by_id(id: int) -> dict:
     """
     Выводит данные одного кандитата по выбранному персональному номеру
-    :param pk: персональный номер кандидата
+    :param id: персональный номер кандидата
     :return: необходимые данные выбранного кандидата
     """
     # Получаем и записываем в переменную весь список словарей с данными кандидатов
-    data_candidates = load_candidates()
-
+    data_candidates = load_candidates_from_json()
     # Запускаем цикл по списку словарей с данными кандидатов
     for candidate in data_candidates:
-
-        # Если в общем списке присутствует кандидат с выбранным номером, то записываем
-        # его данные в переменную, которую потом выводим
-        if candidate['pk'] == pk:
-            display = f"""
-                    <pre>
-                    \tКандидат номер {pk}:\n
-                    <img src = "{candidate['picture']}">
-                    <pre>
-                    Имя - {candidate['name']}
-                    Позиция - {candidate['position']}
-                    Навыки - {candidate['skills']}
-                    </pre>
-                    """
-            return display
-
-    # Если кандидата с таким номером нет в общем списке, то выводим сообщение об этом
-    return "<pre>\tНет кандидата с таким номером.</pre>"
+        # Если в общем списке присутствует кандидат с выбранным номером, то выводим его данные
+        if candidate['id'] == id:
+            return candidate
 
 
-def get_by_skill(skill_name: str) -> str:
+def get_candidates_by_name(candidate_name: str) -> list[dict]:
+    """
+    Выводит данные кандидатов по заданному имени
+    :param candidate_name: задаваемое имя кандидата
+    :return: необходимые данные выбранных кандидатов
+    """
+    # Получаем и записываем в переменную весь список словарей с данными кандидатов
+    data_candidates = load_candidates_from_json()
+    # Определяем переменную, куда будет записан список кандидатов с одинаковыми именами
+    list_candidates_names = []
+    # Запускаем цикл по списку словарей с данными кандидатов
+    for candidate in data_candidates:
+        # Если в общем списке присутствует кандидат с заданным именем, или фамилией,
+        # или имя + фамилия, то...
+        if candidate_name.lower() in candidate['name'].lower().split(" ") or \
+                candidate_name.lower() == candidate['name'].lower():
+            # ...добавляем найденного кандидата в список
+            list_candidates_names.append(candidate)
+    return list_candidates_names
+
+
+def get_candidates_by_skill(skill_name: str) -> list[dict]:
     """
     Выводит данные кандидатов, имеющих заданное знание-умение
     :param skill_name: название заданного знания-умения
     :return: данные кандидатов с выбранным знанием-умением
     """
     # Получаем и записываем в переменную весь список словарей с данными кандидатов
-    data_candidates = load_candidates()
-    # Начинаем записывать в переменную то, что будет возвращать эта функция
-    display = f'<pre>\t\tKандидаты с навыком {skill_name}:\n'
-    # Определяем флаг определения факта нахождения кандидатов с выбранным скиллом
-    found = False
-
+    data_candidates = load_candidates_from_json()
+    # Определяем переменную, куда будет записан список кандидатов с одинаковыми умениями
+    list_candidates_skill = []
     # Запускаем цикл по списку словарей с данными кандидатов
     for candidate in data_candidates:
-
-        # В каждую итерацию проверяем нахождение заданного скила в списке скиллов
-        # кандидата, и если такой скилл у кандидата есть, то
+        # Если в общем списке присутствует кандидат с заданным умением, то...
         if skill_name.lower() in candidate['skills'].lower().split(", "):
-            # Устанавливаем признак нахождения кандидата
-            found = True
-            # Добавляем в переменную для вывода необходимые данные кандидата
-            display += f"""            
-                       Имя - {candidate['name']}
-                       Позиция - {candidate['position']}
-                       Навыки - {candidate['skills']}
-                       """
-    display += '</pre>'
-
-    # Если найдены кандитаты с выбранным скиллом, то выводим их данные
-    if found:
-        return display
-    # Если не найдены кандитаты с выбранным скиллом, то выводим сообщение об этом
-    else:
-        return f"<pre>\tНет кандидатов с навыком {skill_name}!</pre>"
+            # ...добавляем найденного кандидата в список
+            list_candidates_skill.append(candidate)
+    return list_candidates_skill
