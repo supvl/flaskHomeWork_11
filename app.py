@@ -5,30 +5,34 @@ from utils import load_candidates_from_json, get_candidate_by_id, get_candidates
 app = Flask(__name__)
 
 
+# Выводим на главную страницу список всех кандидатов
 @app.route('/')
 def display_candidates_list():
     candidates = load_candidates_from_json()
     return render_template("list.html", candidates=candidates)
 
 
-@app.route('/candidate/<int:id>/')
-def display_candidate_id(id):
-    candidate = get_candidate_by_id(id)
+# Выводим данные кандидата с указанным id
+@app.route('/candidate/<int:idx>/')
+def display_candidate_id(idx):
+    candidate = get_candidate_by_id(idx)
     if not candidate:
         return 'Нет такого кандидата'
     return render_template("single.html", candidate=candidate)
 
 
+# Выводим данные кандидатов с указанным именем
 @app.route('/search/<candidate_name>/')
-def display_candidate_name(candidate_name):
+def display_candidates_name(candidate_name):
     candidates = get_candidates_by_name(candidate_name)
     if not candidates:
         return 'Нет кандидатов с таким именем'
     return render_template("search.html", candidates=candidates)
 
 
+# Выводим данные кандидатов с указанным скиллом
 @app.route('/skill/<skill_name>/')
-def display_candidate_skill(skill_name):
+def display_candidates_skill(skill_name):
     candidates = get_candidates_by_skill(skill_name)
     if not candidates:
         return 'Нет кандидатов с такими скиллами'
